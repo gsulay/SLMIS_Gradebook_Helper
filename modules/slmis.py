@@ -377,7 +377,7 @@ class SLMISHandler:
             return False
         
         file_path = os.path.join('cache', file_path)
-        out_path = f"{self.sections[gradebook_no]}.xlsx"
+        out_path = os.path.join(os.getcwd(), f"{self.sections[gradebook_no]}.xlsx")
         self.formatter(file_path, out_path=out_path)
         os.remove(file_path)
         return out_path
