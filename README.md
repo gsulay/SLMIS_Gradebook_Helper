@@ -23,7 +23,7 @@ Before running the application, ensure you have the following installed:
 
 1. **Clone or Download the Repository**
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/gsulay/SLMIS_Gradebook_Helper.git
 cd <your-repo-folder>
 
 ```
@@ -49,7 +49,7 @@ python main.py
 
 ```
 
-*(Note: Replace `main.py` with whatever you named the frontend file).*
+*(Note: Cache files will take time building on your first use. Please wait for approximately **2 mins**).*
 
 ### 2. Login
 
