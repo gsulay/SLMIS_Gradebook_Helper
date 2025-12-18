@@ -36,15 +36,6 @@ class TableModel(QAbstractTableModel):
     def columnCount(self, index):
         return self._data.shape[1]
 
-    def headerData(self, section, orientation, role):
-        # section is the index of the column/row.
-        if role == Qt.ItemDataRole.DisplayRole:
-            if orientation == Qt.Orientation.Horizontal:
-                return str(self._data.columns[section])
-
-            if orientation == Qt.Orientation.Vertical:
-                return str(self._data.index[section])
-
     def headerData(
         self, section: int, orientation: Qt.Orientation, role: Qt.ItemDataRole
     ):
@@ -171,7 +162,7 @@ class SLMISHandler:
             for cell in all_cells:
                 try:
                     cell_element = cell.find_element(By.TAG_NAME, "span")
-                    if "CLASS_TIT" in cell_element.get_attribute('id'):
+                    if "CLASS_TIT" in str(cell_element.get_attribute('id')):
                         course_element = cell_element.find_element(By.TAG_NAME, "a")
                         course_name = course_element.get_attribute('innerHTML')
                         courses_dictionary[course_name] = r
@@ -277,7 +268,7 @@ class SLMISHandler:
             self.driver.switch_to.frame(self.driver.find_element(By.NAME, "TargetContent"))
             #Going to faculty center
             time.sleep(1)
-            desc = [i.get_attribute("innerHTML") for i in self.driver.find_elements(By.TAG_NAME, 'span') if "DERIVED_LAM_ASSIGNMENT_DESCR" in i.get_attribute("id")]
+            desc = [i.get_attribute("innerHTML") for i in self.driver.find_elements(By.TAG_NAME, 'span') if "DERIVED_LAM_ASSIGNMENT_DESCR" in str(i.get_attribute("id"))]
             all_desc.append(desc)
 
             if i != pages_no - 1:
@@ -411,18 +402,19 @@ class SLMISHandler:
             self.check_if_loaded(By.XPATH , '//input[@type="text"]')
             time.sleep(0.5)
             inputs = self.driver.find_elements(By.XPATH , '//input[@type="text"]')
-            element_names = [i.get_attribute("id") for i in inputs if "DERIVED_LAM_GRADE" in i.get_attribute("id")]
+            element_names = [i.get_attribute("id") for i in inputs if "DERIVED_LAM_GRADE" in str(i.get_attribute("id"))]
 
             
             for name in tqdm(element_names):
                 try:
+                    assert name != None
                     col, row = [int(i) for i in name[18:].split('$')]
                     col = col-1
                     grade = saved_df.iloc[row, col]
                     
                     if pd.isna(grade):
                         grade = 0
-                    if float(f"{round(grade,2)}") == float(self.driver.find_element(By.ID, name).get_attribute("value")):
+                    if float(f"{round(grade,2)}") == float(str(self.driver.find_element(By.ID, name).get_attribute("value"))):
                         continue
 
                     set_grade(grade, name)

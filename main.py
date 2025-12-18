@@ -62,14 +62,19 @@ class UiHandler(Ui_MainWindow):
         for section in all_sections_dict.keys():
             section = self.handler.view_cleaner(section)
             self.sections.addItem(section)
-        self.label.setText(self.sections.item(0).text())
+        
+        text = self.sections.item(0)
+        if text is not None:
+            self.label.setText(text.text())
         self.handler.init_sections()
         self.statusbar.showMessage(f"Welcome, {self.username}")
         
     
     def section_shift(self, x):
         item_no = self.sections.currentRow()
-        self.label.setText(self.sections.item(item_no).text())
+        text = self.sections.item(item_no)
+        if text is not None:
+            self.label.setText(text.text())
     
     def generate_template(self):
         self.statusbar.showMessage("Gathering data...")
