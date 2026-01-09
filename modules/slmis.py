@@ -370,12 +370,52 @@ class SLMISHandler:
         file_path = os.path.join('cache', file_path)
         out_path = os.path.join(os.getcwd(), f"{self.sections[gradebook_no]}.xlsx")
         self.formatter(file_path, out_path=out_path)
-        os.remove(file_path)
-        return out_path
-
+        self.clear_cache()
         
 
+        return out_path
+
+    def clear_cache(self):
+        """
+        Clears the cache folder by deleting all files in it.
+
+        try:
+        Parameters:
+            None
+
+        Returns:
+            None
+        """
+        try:
+            for i in os.listdir('cache'):
+                os.remove(os.path.join('cache', i))
+        except FileNotFoundError:
+            pass
+
     def grade(self, df, gradebook_no):
+        """
+        Grades the students in the specified gradebook according to the grades provided in the given dataframe.
+
+        Args:
+            df (pandas.DataFrame): A dataframe containing the grades to be uploaded.
+            gradebook_no (int): The number of the gradebook to upload the grades to.
+
+        Returns:
+            None
+
+        Raises:
+            None
+
+        Side Effects:
+            Modifies the grades in the specified gradebook on the SLMIS portal.
+
+        Notes:
+            The dataframe should contain columns named 'Names' and 'Grade', with the 'Names' column containing the names of the students and the 'Grade' column containing the grades to be uploaded.
+            The dataframe should be in the format returned by the `generate_template` method.
+            The grades are rounded to two decimal places before uploading.
+            The tool will attempt to grade the students in batches of 7 at a time, and will navigate to the next page after each batch.
+            If the tool encounters a StaleElementReferenceException while grading, it will wait for 1 second and then retry.
+        """
         self.click_gradebook(gradebook_no)
 
         def set_grade(grade, name):
@@ -434,7 +474,6 @@ class SLMISHandler:
                 print("found next button", next_bttn_element.get_attribute('innerHTML'))
                 next_bttn_element.click()
             except NoSuchElementException:
-                
                 print("Grade Finished. Please check before submitting.")
                 break
 
