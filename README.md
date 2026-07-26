@@ -32,7 +32,7 @@ cd <your-repo-folder>
 2. **Install Dependencies**
 It is recommended to use a virtual environment. Install the required libraries using pip:
 ```bash
-pip install PyQt6 pandas selenium tqdm openpyxl
+pip install PyQt6 pandas selenium tqdm openpyxl python-dotenv
 
 ```
 
