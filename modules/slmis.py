@@ -17,7 +17,6 @@ from PyQt6 import QtCore, QtGui
 from PyQt6.QtCore import Qt, QModelIndex, QAbstractTableModel
 import os
 
-
 class TableModel(QAbstractTableModel):
 
     def __init__(self, data):
@@ -136,18 +135,24 @@ class SLMISHandler:
             courses_dictionary (dict): A dictionary containing the course names as keys and the corresponding table rows as values.
         """
         self.go_to_home_page()
-        #Click on Self Service
+
+        # *, Clicking on Left NavBar. NavBar is used for selection as the class is well defined compared to the 'ptifrmtgtframe' table.
+        #Click on Self Service*
         self.check_if_loaded(By.XPATH, '//*[@id="fldra_CO_EMPLOYEE_SELF_SERVICE"]')
         self_service = self.driver.find_element(By.XPATH, '//*[@id="fldra_CO_EMPLOYEE_SELF_SERVICE"]')
         self_service.click()
-        #Going to faculty center
+
+        #Click on faculty center*
         self.check_if_loaded(By.XPATH, '//*[@id="ptifrmtgtframe"]')
-        faculty_center = self.driver.find_element(By.XPATH, '//*[@id="ptifrmtgtframe"]')
-        self.driver.switch_to.frame(faculty_center)
-        faculty_center_button = self.driver.find_element(By.XPATH, '//*[@id="ptppscappnavtbl"]/tbody/tr/td/table/tbody/tr[3]/td/table/tbody/tr[2]/td/table/tbody/tr[2]/td[2]/table/tbody/tr/td/table/tbody/tr[2]/td/ul/li[1]/a')
-        faculty_center_button.click()
-        self.driver.switch_to.default_content()
-        #Techhing schedule
+        faculty_center = self.driver.find_element(By.ID, "fldra_HC_SS_FACULTY_CTR_GBL")
+        faculty_center.click()
+
+        #Click on my schedule*
+        self.check_if_loaded(By.XPATH, '//*[@id="ptifrmtgtframe"]')
+        my_schedule = self.driver.find_element(By.ID, "crefli_HC_SS_FACULTY_GBL")
+        my_schedule.click()
+
+        # Collect Data from the main table
         self.check_if_loaded(By.XPATH, '//*[@id="ptifrmtgtframe"]')
         teaching_schedule = self.driver.find_element(By.XPATH, '//*[@id="ptifrmtgtframe"]')
         self.driver.switch_to.frame(teaching_schedule)
@@ -168,6 +173,7 @@ class SLMISHandler:
                         courses_dictionary[course_name] = r
                 except NoSuchElementException:
                     continue
+
         return courses_dictionary
 
     def authentication(self, username, password):

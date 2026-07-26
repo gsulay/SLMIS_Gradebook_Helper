@@ -6,3 +6,6 @@ output
 *.ipynb
 *.xlsx
 *.csv
+
+# Vars
+.env

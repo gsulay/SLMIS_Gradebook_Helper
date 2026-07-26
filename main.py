@@ -12,9 +12,12 @@ from PyQt6.QtWidgets import QFileDialog, QDialog, QMessageBox, QLineEdit
 from modules import SLMISHandler, TableModel, Ui_Dialog, Ui_MainWindow
 import json
 import os
+import sys
+from dotenv import load_dotenv
 
+load_dotenv()
 
-
+DEBUG = False
 FILE_FILTERS = [
  "Excel Files (*.xlsx *.xls)",
 ]
@@ -31,7 +34,7 @@ class UiHandler(Ui_MainWindow):
         self.gradeBttn.clicked.connect(self.grade)
 
 
-    def debug_init(self):
+    def setup_init(self, debug=False):
         """
         Initializes the debug mode of the application.
 
@@ -46,10 +49,13 @@ class UiHandler(Ui_MainWindow):
         This function does not have any parameters and does not return any values.
         """
 
-        cred = json.load(open("auth_success.json"))
-        os.remove("auth_success.json")
-        print("loaded in credentials")
-        username, password = cred['user_name'], cred['password']
+        if debug:
+            username, password = os.getenv('user_id'), os.getenv('password')
+        else:
+            cred = json.load(open("auth_success.json"))
+            os.remove("auth_success.json")
+            print("loaded in credentials")
+            username, password = cred['user_name'], cred['password']
 
         print("Starting Handler")
         self.handler = SLMISHandler()
@@ -108,21 +114,27 @@ class UiHandler(Ui_MainWindow):
 
 
 if __name__ == "__main__":
-    import sys
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
 
-    login_dialog = Ui_Dialog()
-    login_dialog.passwordInput.setEchoMode(QLineEdit.EchoMode.Password)
-    if login_dialog.exec() == QDialog.DialogCode.Accepted:
+    if DEBUG:
         ui = UiHandler()
         ui.setupUi(MainWindow)
-        QMessageBox.information(None, "Success", "Logged in successfully!\nOpening main window...")
         MainWindow.show()
-        ui.debug_init()
+        ui.setup_init(DEBUG)
+
     else:
-        QMessageBox.warning(None, "Failure", "Login failed!")
-        sys.exit()
+        login_dialog = Ui_Dialog()
+        login_dialog.passwordInput.setEchoMode(QLineEdit.EchoMode.Password)
+        if login_dialog.exec() == QDialog.DialogCode.Accepted:
+            ui = UiHandler()
+            ui.setupUi(MainWindow)
+            QMessageBox.information(None, "Success", "Logged in successfully!\nOpening main window...")
+            MainWindow.show()
+            ui.setup_init()
+        else:
+            QMessageBox.warning(None, "Failure", "Login failed!")
+            sys.exit()
     
     sys.exit(app.exec())
 
